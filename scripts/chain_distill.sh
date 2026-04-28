@@ -13,19 +13,26 @@ set -e
 
 cd /home/oni/oni
 
-# Источники по убыванию приоритета (порядок согласно PROGRESS.md)
+# Источники — DevOps focus only.
+# Порядок: от точно DevOps к DevOps-смежному. Идём ПОСТЕПЕННО,
+# по одному за ночь, не торопимся.
+#
+# Frontend-only (js_only, ts_only, frontend_fullstack), oss_full,
+# eslint_filter — НЕ ДЛЯ нашего DevOps-агента. Закомментированы.
+# При необходимости в будущем — раскомментировать.
 SOURCES=(
-    "hf_magicoder_bash_pipes_filter"           # 300  ← может уже идти, скрипт пропустит если есть готовый run
-    "hf_magicoder_django_filter"                # 300  high
-    "hf_magicoder_express_filter"               # 250  medium
-    "hf_magicoder_microservices_filter"         # 250  medium
-    "hf_magicoder_design_patterns_filter"       # 250  medium
-    "hf_magicoder_solid_filter"                 # 250  medium
-    "hf_magicoder_frontend_fullstack_filter"    # 400  low
-    "hf_magicoder_js_only_filter"               # 400  low
-    "hf_magicoder_ts_only_filter"               # 400  low
-    "hf_magicoder_oss_full"                     # 200  low
-    "hf_magicoder_eslint_filter"                # 10   trivial
+    "hf_magicoder_bash_pipes_filter"           # 300  ★ Linux CLI пайплайны (running now)
+    "hf_magicoder_django_filter"                # 300  ★ Python backend deployment context
+    "hf_magicoder_express_filter"               # 250  ★ Node backend deployment context
+    "hf_magicoder_microservices_filter"         # 250  ★ distributed systems, queues, service discovery
+    "hf_magicoder_design_patterns_filter"       # 250  · architectural reasoning (DevOps-adjacent)
+    "hf_magicoder_solid_filter"                 # 250  · refactoring/code review (DevOps-adjacent)
+    # Skipped — pure frontend, не относится к DevOps-агенту:
+    # "hf_magicoder_frontend_fullstack_filter"    # 400  не наш домен
+    # "hf_magicoder_js_only_filter"               # 400  не наш домен
+    # "hf_magicoder_ts_only_filter"               # 400  не наш домен
+    # "hf_magicoder_oss_full"                     # 200  слишком broad, низкое signal-to-noise
+    # "hf_magicoder_eslint_filter"                # 10   trivial объём
 )
 
 VENV=/home/oni/oni/.venv/bin/python
