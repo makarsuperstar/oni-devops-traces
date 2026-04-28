@@ -13,26 +13,31 @@ set -e
 
 cd /home/oni/oni
 
-# Источники — DevOps focus only.
-# Порядок: от точно DevOps к DevOps-смежному. Идём ПОСТЕПЕННО,
-# по одному за ночь, не торопимся.
-#
-# Frontend-only (js_only, ts_only, frontend_fullstack), oss_full,
-# eslint_filter — НЕ ДЛЯ нашего DevOps-агента. Закомментированы.
-# При необходимости в будущем — раскомментировать.
+# Источники — ПОЛНЫЙ список. Хуже не будет иметь все.
+# Порядок приоритета: DevOps-критические сначала, потом frontend / broad.
+# Если сорс ещё не скачан с HF (нет data.jsonl) — chain SKIP'нет, мы потом
+# докачаем и повторно запустим chain.
 SOURCES=(
-    "hf_magicoder_bash_pipes_filter"           # 300  ★ Linux CLI пайплайны (running now)
-    "hf_magicoder_django_filter"                # 300  ★ Python backend deployment context
-    "hf_magicoder_express_filter"               # 250  ★ Node backend deployment context
-    "hf_magicoder_microservices_filter"         # 250  ★ distributed systems, queues, service discovery
-    "hf_magicoder_design_patterns_filter"       # 250  · architectural reasoning (DevOps-adjacent)
-    "hf_magicoder_solid_filter"                 # 250  · refactoring/code review (DevOps-adjacent)
-    # Skipped — pure frontend, не относится к DevOps-агенту:
-    # "hf_magicoder_frontend_fullstack_filter"    # 400  не наш домен
-    # "hf_magicoder_js_only_filter"               # 400  не наш домен
-    # "hf_magicoder_ts_only_filter"               # 400  не наш домен
-    # "hf_magicoder_oss_full"                     # 200  слишком broad, низкое signal-to-noise
-    # "hf_magicoder_eslint_filter"                # 10   trivial объём
+    # === DEVOPS CORE === ✓ done или running
+    "hf_magicoder_bash_pipes_filter"           # 300  ✓ Linux CLI pipelines
+    "hf_magicoder_django_filter"                # 300  ✓ Python backend
+    "hf_magicoder_express_filter"               # 250  Node backend
+    "hf_magicoder_microservices_filter"         # 250  distributed/queues
+    "hf_magicoder_design_patterns_filter"       # 250  GoF patterns
+    "hf_magicoder_solid_filter"                 # 250  refactoring
+    # === DEVOPS GAPS ADDED 29 APR === метадата готова, нужно download_item.py
+    "hf_magicoder_ssh_filter"                   # 300  🔥 SSH workflow (Stage 1 critical)
+    "hf_magicoder_docker_advanced_filter"       # 300  🔥 Docker advanced patterns
+    "hf_magicoder_kubernetes_filter"            # 200  🔥 K8s manifests + kubectl
+    "hf_magicoder_ci_cd_specific_filter"        # 250  GitLab CI / GitHub Actions / Jenkins
+    "hf_magicoder_postgres_advanced_filter"     # 250  PostgreSQL advanced
+    # === FRONTEND (re-included) === хуже не будет
+    "hf_magicoder_frontend_fullstack_filter"    # 400  JS/TS/HTML/CSS tooling
+    "hf_magicoder_js_only_filter"               # 400  vanilla JS
+    "hf_magicoder_ts_only_filter"               # 400  TypeScript
+    # === MISC ===
+    "hf_magicoder_oss_full"                     # 200  broad OSS code (Magicoder-OSS-75K)
+    "hf_magicoder_eslint_filter"                # 10   trivial but включаем
 )
 
 VENV=/home/oni/oni/.venv/bin/python
