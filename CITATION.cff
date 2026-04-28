@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this dataset, please cite it as below."
+authors:
+  - family-names: "MakarSuperstar"
+title: "oni-devops-traces: Open multi-turn DevOps agent traces, distilled"
+version: "0.1.0"
+date-released: "2026-04-28"
+url: "https://github.com/makarsuperstar/oni-devops-traces"
+keywords:
+  - dataset
+  - llm
+  - fine-tuning
+  - agent
+  - devops
+  - distillation
+  - synthetic-data
+  - jsonl
+  - multi-turn
+  - tool-use
+license: Apache-2.0

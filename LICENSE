@@ -1,0 +1,38 @@
+                                 Apache License
+                           Version 2.0, January 2004
+                        http://www.apache.org/licenses/
+
+   Copyright 2026 MakarSuperstar (Oni — DevOps AI Agent project)
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+---
+
+NOTE ON SUBSET LICENSES:
+
+Each subset under data/distilled_*/ has its own LICENSE file inheriting
+the most restrictive upstream license:
+
+  - Subsets distilled from Magicoder family (ise-uiuc/Magicoder-Evol-Instruct-110K,
+    ise-uiuc/Magicoder-OSS-Instruct-75K) are MIT-licensed.
+
+  - Subsets distilled from CommitPack (bigcode/commitpackft) are MIT-licensed.
+
+  - Subsets distilled from CC-BY-licensed sources require attribution under
+    CC-BY terms. Check the per-subset LICENSE before redistributing.
+
+The teacher model (gemma4:31b) used to generate the agent traces is
+Apache 2.0-licensed — its outputs do not impose additional restrictions.
+
+The hand-crafted reference traces under data/own_anchors/ are the original
+work of MakarSuperstar and the Oni project, released under Apache 2.0.
