@@ -238,6 +238,23 @@ cat data/own_anchors/train.jsonl \
 
 ---
 
+## Похожие проекты
+
+Если этот репо вам интересен — посмотрите ещё:
+
+- **[Distilabel](https://github.com/argilla-io/distilabel)** от Argilla/HF — general-purpose framework для LLM synthetic data пайплайнов. Если хотите масштабировать наш подход на много источников или интегрировать с Argilla для разметки — портируйте pipeline в Distilabel как кастомный `Step`. Мы написали свои минимальные скрипты (~250 LOC, только `requests` + `pyyaml`) для полного контроля в рамках одного проекта, но Distilabel — это более переиспользуемый выбор.
+- **[AgentInstruct](https://arxiv.org/abs/2407.03502)** (Microsoft, 2024) — мульти-агентная симуляция для генерации agent training data. Закрытый код, использует GPT-4. Другой подход (симуляция vs reformatting существующих данных), но та же цель — multi-turn agent трейсы.
+- **[NousResearch/hermes-function-calling-v1](https://huggingface.co/datasets/NousResearch/hermes-function-calling-v1)** — hand-curated агентные трейсы с tool-use форматом. Меньший масштаб но высокое качество, дополняет наш датасет.
+- **[Self-Instruct](https://arxiv.org/abs/2212.10560)** — оригинальная статья по bootstrap'у instruction data из малого seed-набора. Мы используем похожую идею (5 anchor трейсов задают формат), но для reformatting'а, не expansion'а.
+- **[Magicoder](https://github.com/ise-uiuc/magicoder)** — source датасеты из которых мы distill'им. Они сами self-distill'ят инструкции из raw OSS-кода; мы distill'им agent traces из их инструкций. Два уровня вверх по data ladder'у.
+
+### Чем мы отличаемся
+
+- **Ниша:** конкретно `single-turn instruction → multi-turn agent trace` reformatting (не генерация с нуля, не chat distillation)
+- **Local-first:** проектировался под одну 24GB GPU с Ollama, никаких API-затрат
+- **Format-specific scoring:** 8 composite метрик заточенных под наш agent JSONL формат
+- **Self-describing artifacts:** каждый distillation run упаковывает свой README с провенансом
+
 ## Roadmap
 
 - [x] Benchmark 4 teacher кандидатов → gemma4:31b winner (92.0/100)

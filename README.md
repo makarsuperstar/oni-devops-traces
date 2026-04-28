@@ -242,6 +242,23 @@ See [LICENSE](LICENSE) and per-subset LICENSE files for details.
 
 ---
 
+## Related work
+
+If you're looking at this repo, you might also want to check:
+
+- **[Distilabel](https://github.com/argilla-io/distilabel)** by Argilla/HF — general-purpose framework for LLM-based synthetic data pipelines. If you want to scale this approach to many sources or integrate with Argilla for annotation, port the pipeline to Distilabel as a custom `Step`. We rolled our own minimal scripts (~250 LOC, only `requests` + `pyyaml` deps) for full control on a single project, but Distilabel is the more reusable choice.
+- **[AgentInstruct](https://arxiv.org/abs/2407.03502)** (Microsoft, 2024) — multi-agent simulation framework for generating diverse agent training data. Closed-source, uses GPT-4. Different approach (simulation vs reformatting existing datasets) but same goal: produce multi-turn agent traces.
+- **[NousResearch/hermes-function-calling-v1](https://huggingface.co/datasets/NousResearch/hermes-function-calling-v1)** — hand-curated agent traces with tool-use format. Smaller scale but high quality, complementary to ours.
+- **[Self-Instruct](https://arxiv.org/abs/2212.10560)** — original paper on bootstrapping instruction data from a small seed set. We use a similar idea (5 anchor traces drive the format) but for reformatting, not expansion.
+- **[Magicoder](https://github.com/ise-uiuc/magicoder)** — the source datasets we distill from. They self-distill instructions from raw OSS code; we distill agent traces from their instructions. Two layers up the data ladder.
+
+### How we differ
+
+- **Niche:** specifically `single-turn instruction → multi-turn agent trace` reformatting (not generation from scratch, not chat distillation)
+- **Local-first:** designed for a single 24GB GPU running Ollama, no API spend
+- **Format-specific scoring:** 8 composite metrics tuned to our agent JSONL format
+- **Self-describing artifacts:** each distillation run packages its own README with provenance
+
 ## Roadmap
 
 - [x] Benchmark 4 teacher candidates → gemma4:31b winner (92.0/100)
