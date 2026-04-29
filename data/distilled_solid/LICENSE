@@ -1,0 +1,7 @@
+MIT License (inherited from source dataset hf_magicoder_solid_filter)
+
+This subset is a derivative work distilled from hf_magicoder_solid_filter (MIT-licensed)
+via gemma4:31b (Apache 2.0) using few-shot prompting with traces from
+oni:base-7.v2 (Apache 2.0). All upstream licenses are MIT-compatible.
+
+You are free to use, modify, and redistribute under MIT terms.
