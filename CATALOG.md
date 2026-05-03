@@ -115,21 +115,33 @@ pipeline.
 
 ---
 
-## 🔵 DISTILLED — выход SeedBuilder pipeline (создаются)
+## 🔵 DISTILLED — выход SeedBuilder pipeline (готово на 2026-05-03)
 
-**Пока пусто.** Будут создаваться после `RUNBOOK_DISTILL` runs.
+15 subsets через teacher **gemma4:31b** на 3090, min_score=84.8. Score range
+во всех таблицах — 84.8–100. Подробности см. `RUNBOOK_DISTILL.md`.
 
-Шаблон будущей записи:
+| ID | Source bucket | Items | Acceptance |
+|---|---|---:|---:|
+| `distilled_bash_pipes` | hf_magicoder_bash_pipes_filter | 243/300 | 81% |
+| `distilled_ci_cd_specific` | hf_magicoder_ci_cd_specific_filter | 215/250 | 86% |
+| `distilled_design_patterns` | hf_magicoder_design_patterns_filter | 182/250 | 73% |
+| `distilled_django` | hf_magicoder_django_filter | 199/300 | 66% |
+| `distilled_docker_advanced` | hf_magicoder_docker_advanced_filter | 248/300 | 83% |
+| `distilled_eslint` | hf_magicoder_eslint_filter | 8/10 | 80% |
+| `distilled_express` | hf_magicoder_express_filter | 199/250 | 80% |
+| `distilled_frontend_fullstack` | hf_magicoder_frontend_fullstack_filter | 310/400 | 78% |
+| `distilled_js_only` | hf_magicoder_js_only_filter | 351/400 | 88% |
+| `distilled_kubernetes` | hf_magicoder_kubernetes_filter | 79/200 | 40% |
+| `distilled_microservices` | hf_magicoder_microservices_filter | 133/250 | 53% |
+| `distilled_postgres_advanced` | hf_magicoder_postgres_advanced_filter | 150/250 | 60% |
+| `distilled_solid` | hf_magicoder_solid_filter | 192/250 | 77% |
+| `distilled_ssh` | hf_magicoder_ssh_filter | 225/300 | 75% |
+| `distilled_ts_only` | hf_magicoder_ts_only_filter | 308/400 | 77% |
 
-```
-| ID | Source | Teacher | Items | Acceptance | Used in | Score range |
-|---|---|---|---:|---|---|---|
-| `distilled_hf_magicoder_bash_pipes_filter` | hf_magicoder_bash_pipes_filter | gemma4:31b | TBD/300 | TBD% | base-10 | 84.8-100 |
-| `distilled_hf_magicoder_django_filter` | hf_magicoder_django_filter | gemma4:31b | TBD/300 | TBD% | base-10 | 84.8-100 |
-| ... | ... | ... | ... | ... | ... | ... |
-```
+**Итого: 15 subsets, 4110 raw → 3042 accepted traces (~74%).**
 
-После каждого distill prod-run обновлять эту секцию.
+Skipped: `hf_magicoder_oss_full` — gemma4:31b отвергла все 200 (broad OSS
+слишком грязный для нашего min_score=84.8).
 
 ---
 

@@ -2,24 +2,37 @@
 
 > **Open multi-turn DevOps agent traces** in `Thought → Code → Observation` format,
 > distilled from existing instruction datasets via a local 31B teacher LLM.
-> Drop-in for SFT on 24GB GPUs.
+> Train on 24GB, deploy on any 16GB GPU (RTX 4080 / 4070 Ti / 5060 Ti / Apple Silicon).
 
 [![License](https://img.shields.io/badge/code-Apache_2.0-blue.svg)](LICENSE)
 [![Data](https://img.shields.io/badge/data-MIT_(inherited)-green.svg)](LICENSE)
 [![Format](https://img.shields.io/badge/format-JSONL_agent_traces-orange.svg)](DATASET_FORMAT.md)
 [![Teacher](https://img.shields.io/badge/teacher-gemma4%3A31b-purple.svg)](#how-we-built-this)
-[![Local](https://img.shields.io/badge/run-local_24GB_GPU-red.svg)](REPRODUCE.md)
+[![Deploy](https://img.shields.io/badge/deploy-16GB_GPU-green.svg)](REPRODUCE.md)
+[![Train](https://img.shields.io/badge/train-24GB_GPU-orange.svg)](REPRODUCE.md)
 
 🇷🇺 [Русская версия / Russian translation](README_RU.md)
 
 ```
 data/
-├── own_anchors/            ← 1867 hand-crafted golden traces (the format spec)
-├── distilled_bash_pipes/   ← Linux command-line, pipes, awk/grep/sed
-├── distilled_django/       ← Django scaffolding & patterns
-├── distilled_express/      ← Express.js routing & middleware
-├── distilled_microservices/← message queues, service discovery
-└── ...                     (grows as we distill more sources)
+├── own_anchors/                  ← 1867 hand-crafted golden traces (the format spec)
+├── distilled_bash_pipes/         ← Linux CLI, pipes, awk/grep/sed (243)
+├── distilled_ci_cd_specific/     ← GitLab CI / GitHub Actions / Jenkins (215)
+├── distilled_design_patterns/    ← GoF & architectural patterns (182)
+├── distilled_django/             ← Django ecosystem (199)
+├── distilled_docker_advanced/    ← Docker beyond basic build/run (248)
+├── distilled_eslint/             ← ESLint configs & rules (8)
+├── distilled_express/            ← Express.js routing & middleware (199)
+├── distilled_frontend_fullstack/ ← JS/TS/HTML/CSS tooling (310)
+├── distilled_js_only/            ← plain JavaScript (351)
+├── distilled_kubernetes/         ← K8s manifests & kubectl (79)
+├── distilled_microservices/      ← message queues, service discovery (133)
+├── distilled_postgres_advanced/  ← PostgreSQL beyond CRUD (150)
+├── distilled_solid/              ← SOLID principles, refactoring (192)
+├── distilled_ssh/                ← SSH workflows, key auth, scp/rsync (225)
+└── distilled_ts_only/            ← TypeScript interfaces, generics, tsconfig (308)
+
+# 15 distilled subsets, ~3042 accepted traces (gemma4:31b teacher, min_score 84.8)
 ```
 
 ---
@@ -42,9 +55,11 @@ To rebuild from scratch or adapt to your own domain — see [REPRODUCE.md](REPRO
 
 ### What we were doing
 
-Fine-tuning Qwen3-14B into a local DevOps AI agent. Goal: have it run on a single
-RTX 3090, understand our infrastructure (SSH, Docker, nginx, Django, Vue/React),
-carry on a multi-turn dialog with tools (`bash`, `read_file`, `write_file`,
+Fine-tuning Qwen3-14B into a local DevOps AI agent. Goal: train it on our
+RTX 3090 (24GB needed for QLoRA + activations + gradients), then **deploy
+on any 16GB GPU** — RTX 4080, 4070 Ti, 5060 Ti, or Apple Silicon. Should
+understand our infrastructure (SSH, Docker, nginx, Django, Vue/React), carry
+on a multi-turn dialog with tools (`bash`, `read_file`, `write_file`,
 `list_dir`), and **honestly report failures** instead of pretending success
 when a command actually broke.
 
@@ -117,15 +132,27 @@ Apache 2.0 for our code and teacher contributions).
 
 | Subset | Source | Items raw → accepted | Why this domain |
 |---|---|---:|---|
-| `bash_pipes` | Magicoder-Evol filter on grep/awk/sed/find/xargs/jq | 300 → ~265 | Linux CLI pipelines — our agent handles single commands well, but struggles with `grep \| awk \| sort \| uniq -c \| sort -rn \| head` chains |
-| `django` | Magicoder-Evol filter on Django ecosystem | 300 → ~265 | Django scaffolding — was 0/11 on our L1.1 benchmark in base-6.v2 |
-| `express` | Magicoder-Evol filter on Express.js | 250 → ~220 | Node.js backend coverage was thin (10 seeds for the entire JS ecosystem) |
-| `microservices` | Magicoder-Evol filter on distributed | 250 → ~220 | Kubernetes/cloud absent (0 seeds) |
-| `design_patterns` | Magicoder-Evol filter on GoF | 250 → ~220 | Architectural reasoning in tasks like "design a pub/sub" |
-| `solid` | Magicoder-Evol filter on SOLID/refactor | 250 → ~220 | Not just write code — improve it |
-| `frontend_fullstack` | Magicoder-Evol filter on JS/TS/Node/HTML/CSS | 400 → ~350 | Tooling (eslint/prettier/jest/vite/webpack) |
-| `js_only` | Magicoder-Evol filter on plain JS | 400 → ~350 | Distinguish vanilla JS from TypeScript |
-| `ts_only` | Magicoder-Evol filter on TypeScript | 400 → ~350 | Interfaces/types/generics/tsconfig |
+| `bash_pipes` | Magicoder-Evol filter on grep/awk/sed/find/xargs/jq | 300 → 243 | Linux CLI pipelines — our agent handles single commands well, but struggles with `grep \| awk \| sort \| uniq -c \| sort -rn \| head` chains |
+| `ci_cd_specific` | Magicoder-Evol filter on GitLab CI / GitHub Actions / Jenkins | 250 → 215 | CI/CD pipelines beyond hello-world deploys |
+| `design_patterns` | Magicoder-Evol filter on GoF | 250 → 182 | Architectural reasoning in tasks like "design a pub/sub" |
+| `django` | Magicoder-Evol filter on Django ecosystem | 300 → 199 | Django scaffolding — fills a soft spot we observed on L1.1-style benchmarks |
+| `docker_advanced` | Magicoder-Evol filter on Docker beyond basic build/run | 300 → 248 | Multi-stage builds, healthchecks, networks, compose patterns |
+| `eslint` | Magicoder-Evol filter on ESLint | 10 → 8 | Tiny but covers ESLint configs and rule customization |
+| `express` | Magicoder-Evol filter on Express.js | 250 → 199 | Node.js backend coverage was thin (10 seeds for the entire JS ecosystem) |
+| `frontend_fullstack` | Magicoder-Evol filter on JS/TS/Node/HTML/CSS | 400 → 310 | Tooling (eslint/prettier/jest/vite/webpack) |
+| `js_only` | Magicoder-Evol filter on plain JS | 400 → 351 | Distinguish vanilla JS from TypeScript |
+| `kubernetes` | Magicoder-Evol filter on Kubernetes | 200 → 79 | K8s manifests and kubectl workflows (low acceptance — Magicoder is K8s-light) |
+| `microservices` | Magicoder-Evol filter on distributed/queues | 250 → 133 | Message queues, service discovery |
+| `postgres_advanced` | Magicoder-Evol filter on PostgreSQL beyond CRUD | 250 → 150 | Window functions, indices, EXPLAIN, vacuum |
+| `solid` | Magicoder-Evol filter on SOLID/refactor | 250 → 192 | Not just write code — improve it |
+| `ssh` | Magicoder-Evol filter on SSH workflows | 300 → 225 | SSH workflows beyond plain `ssh user@host`: keys, scp/rsync, port forwarding |
+| `ts_only` | Magicoder-Evol filter on TypeScript | 400 → 308 | Interfaces/types/generics/tsconfig |
+
+**Totals: 15 subsets, 4110 raw → 3042 accepted (~74% acceptance), gemma4:31b teacher, min_score 84.8.**
+
+One source bucket was attempted but **not** released: `hf_magicoder_oss_full`
+(broad Magicoder-OSS-Instruct-75K) — gemma4:31b rejected all 200 sampled
+items at min_score 84.8 (too noisy / not DevOps-shaped). Skipped from publication.
 
 Full catalog with per-subset description, provenance, licenses, and links to
 benchmark scores: [CATALOG.md](CATALOG.md).
@@ -255,7 +282,7 @@ If you're looking at this repo, you might also want to check:
 ### How we differ
 
 - **Niche:** specifically `single-turn instruction → multi-turn agent trace` reformatting (not generation from scratch, not chat distillation)
-- **Local-first:** designed for a single 24GB GPU running Ollama, no API spend
+- **Asymmetric hardware:** train on a single 24GB GPU (RTX 3090), deploy on any 16GB GPU. Wider deployment market — most consumer cards work.
 - **Format-specific scoring:** 8 composite metrics tuned to our agent JSONL format
 - **Self-describing artifacts:** each distillation run packages its own README with provenance
 

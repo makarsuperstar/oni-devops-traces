@@ -2,22 +2,38 @@
 
 > **Открытый датасет multi-turn DevOps agent трейсов** в формате
 > `Thought → Code → Observation`, distilled из существующих instruction-датасетов
-> через локальную 31B teacher LLM. Готов к подмесу в SFT на 24GB GPU.
+> через локальную 31B teacher LLM.
+> Обучаем на 24GB (RTX 3090), запускаем на любой 16GB GPU
+> (RTX 4080 / 4070 Ti / 5060 Ti / Apple Silicon).
 
 [![License](https://img.shields.io/badge/code-Apache_2.0-blue.svg)](LICENSE)
 [![Data](https://img.shields.io/badge/data-MIT_(inherited)-green.svg)](LICENSE)
 [![Format](https://img.shields.io/badge/format-JSONL_agent_traces-orange.svg)](DATASET_FORMAT.md)
+[![Deploy](https://img.shields.io/badge/deploy-16GB_GPU-green.svg)](REPRODUCE.md)
+[![Train](https://img.shields.io/badge/train-24GB_GPU-orange.svg)](REPRODUCE.md)
 
 🇬🇧 [English version (primary)](README.md)
 
 ```
 data/
-├── own_anchors/            ← 1867 ручных золотых трейсов (эталон формата)
-├── distilled_bash_pipes/   ← Linux CLI, пайплайны, awk/grep/sed
-├── distilled_django/       ← Django scaffolding
-├── distilled_express/      ← Express.js routing/middleware
-├── distilled_microservices/← очереди сообщений, service discovery
-└── ...                     (растёт по мере distillation)
+├── own_anchors/                  ← 1867 ручных золотых трейсов (эталон формата)
+├── distilled_bash_pipes/         ← Linux CLI, пайплайны (243)
+├── distilled_ci_cd_specific/     ← GitLab CI / GitHub Actions / Jenkins (215)
+├── distilled_design_patterns/    ← GoF и архитектурные паттерны (182)
+├── distilled_django/             ← Django ecosystem (199)
+├── distilled_docker_advanced/    ← Docker сверх базового build/run (248)
+├── distilled_eslint/             ← ESLint configs и rules (8)
+├── distilled_express/            ← Express.js routing/middleware (199)
+├── distilled_frontend_fullstack/ ← JS/TS/HTML/CSS tooling (310)
+├── distilled_js_only/            ← чистый JavaScript (351)
+├── distilled_kubernetes/         ← K8s manifests и kubectl (79)
+├── distilled_microservices/      ← очереди сообщений, service discovery (133)
+├── distilled_postgres_advanced/  ← PostgreSQL сверх CRUD (150)
+├── distilled_solid/              ← SOLID, рефакторинг (192)
+├── distilled_ssh/                ← SSH workflows, ключи, scp/rsync (225)
+└── distilled_ts_only/            ← TypeScript: интерфейсы, generics, tsconfig (308)
+
+# 15 distilled subsets, ~3042 принятых трейсов (teacher gemma4:31b, min_score 84.8)
 ```
 
 ---
@@ -113,15 +129,27 @@ verification-перед-final_answer.
 
 | Subset | Источник | Items raw → accepted | Зачем взяли |
 |---|---|---:|---|
-| `bash_pipes` | Magicoder-Evol filter on grep/awk/sed/find/xargs/jq | 300 → ~265 | Linux CLI пайплайны — наш агент устойчиво рулит одной командой, но плохо строит `grep \| awk \| sort \| uniq -c \| sort -rn \| head` цепочки |
-| `django` | Magicoder-Evol filter on Django ecosystem | 300 → ~265 | Django scaffolding — был провал на L1.1 (0/11) в нашей base-6.v2 |
-| `express` | Magicoder-Evol filter on Express.js | 250 → ~220 | Node.js backend coverage был тонким (10 seeds на весь JS ecosystem) |
-| `microservices` | Magicoder-Evol filter on distributed | 250 → ~220 | Kubernetes/cloud отсутствовал (0 seeds) |
-| `design_patterns` | Magicoder-Evol filter on GoF | 250 → ~220 | Архитектурные решения в задачах "спроектируй pub/sub" |
-| `solid` | Magicoder-Evol filter on SOLID/refactor | 250 → ~220 | Не просто писать код, но улучшать его |
-| `frontend_fullstack` | Magicoder-Evol filter on JS/TS/Node/HTML/CSS | 400 → ~350 | Tooling (eslint/prettier/jest/vite/webpack) |
-| `js_only` | Magicoder-Evol filter on plain JS | 400 → ~350 | Различать vanilla JS vs TypeScript |
-| `ts_only` | Magicoder-Evol filter on TypeScript | 400 → ~350 | Interfaces/types/generics/tsconfig |
+| `bash_pipes` | Magicoder-Evol filter on grep/awk/sed/find/xargs/jq | 300 → 243 | Linux CLI пайплайны — наш агент устойчиво рулит одной командой, но плохо строит `grep \| awk \| sort \| uniq -c \| sort -rn \| head` цепочки |
+| `ci_cd_specific` | Magicoder-Evol filter on GitLab CI / GitHub Actions / Jenkins | 250 → 215 | CI/CD пайплайны сверх hello-world deploy |
+| `design_patterns` | Magicoder-Evol filter on GoF | 250 → 182 | Архитектурные решения в задачах "спроектируй pub/sub" |
+| `django` | Magicoder-Evol filter on Django ecosystem | 300 → 199 | Django scaffolding — закрывает наблюдаемую слабую сторону на L1.1-задачах |
+| `docker_advanced` | Magicoder-Evol filter on Docker beyond basic build/run | 300 → 248 | Multi-stage builds, healthchecks, networks, compose-паттерны |
+| `eslint` | Magicoder-Evol filter on ESLint | 10 → 8 | Маленький, но покрывает ESLint configs и кастомизацию правил |
+| `express` | Magicoder-Evol filter on Express.js | 250 → 199 | Node.js backend coverage был тонким (10 seeds на весь JS ecosystem) |
+| `frontend_fullstack` | Magicoder-Evol filter on JS/TS/Node/HTML/CSS | 400 → 310 | Tooling (eslint/prettier/jest/vite/webpack) |
+| `js_only` | Magicoder-Evol filter on plain JS | 400 → 351 | Различать vanilla JS vs TypeScript |
+| `kubernetes` | Magicoder-Evol filter on Kubernetes | 200 → 79 | K8s manifests и kubectl workflows (низкое acceptance — Magicoder K8s-light) |
+| `microservices` | Magicoder-Evol filter on distributed/queues | 250 → 133 | Message queues, service discovery |
+| `postgres_advanced` | Magicoder-Evol filter on PostgreSQL beyond CRUD | 250 → 150 | Window functions, индексы, EXPLAIN, vacuum |
+| `solid` | Magicoder-Evol filter on SOLID/refactor | 250 → 192 | Не просто писать код, но улучшать его |
+| `ssh` | Magicoder-Evol filter on SSH workflows | 300 → 225 | SSH workflows сверх простого `ssh user@host`: ключи, scp/rsync, port forwarding |
+| `ts_only` | Magicoder-Evol filter on TypeScript | 400 → 308 | Interfaces/types/generics/tsconfig |
+
+**Итого: 15 subsets, 4110 raw → 3042 принято (~74% acceptance), teacher gemma4:31b, min_score 84.8.**
+
+Один source bucket был запрошен, но **не опубликован**: `hf_magicoder_oss_full`
+(broad Magicoder-OSS-Instruct-75K) — gemma4:31b отвергла все 200 sampled
+item-ов на min_score 84.8 (слишком noisy / не-DevOps-shape). Пропущен.
 
 Полный каталог с описанием каждого subset, провенансом, лицензиями, и связями
 с бенчмарк-числами — в [CATALOG.md](CATALOG.md).
